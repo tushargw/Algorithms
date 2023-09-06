@@ -15,17 +15,13 @@
 		public Item? Left { get; set; }
 		public Item? Right { get; set; }
 
-		internal void ConsoleWrite(int level, bool newLine)
+		internal void ConsoleWrite(int level)
 		{
-			var quote = level > 0 ? "'" : "";
 			var output = $"{new String(' ', level)}{Value}({Frequency})";
-			if (newLine)
-				Console.WriteLine(output);
-			else
-				Console.Write(output);
+			Console.WriteLine(output);
 
-			Left?.ConsoleWrite(level + 1, false);
-			Right?.ConsoleWrite(level + 1, true);
+			Left?.ConsoleWrite(level + 4);
+			Right?.ConsoleWrite(level + 4);
 		}
 	}
 }

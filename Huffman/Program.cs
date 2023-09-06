@@ -22,7 +22,94 @@
 			);
 			});
 
-			// Create priority queue
+			List<Item> queue = CreatePriorityQueue(bytes);
+
+			// Show content
+			Pause("Priority Queue", () =>
+			{
+				queue.ForEach(x =>
+				{
+					x.ConsoleWrite(0);
+				}
+			);
+			});
+
+			var root = MakeTreeFromQueue(queue);
+
+			var lookup = MakeLookupFromTree(root);
+
+			Pause("Code lookup", () =>
+			{
+				foreach (var key in lookup.Keys)
+				{
+					Console.WriteLine($"{key} - {lookup[key]}");
+				}
+			});
+		}
+
+		private static IDictionary<string, string> MakeLookupFromTree(Item root)
+		{
+			var dict = new Dictionary<string, string>();
+
+			// TGW: Populate dictionary
+
+			return dict;
+		}
+
+		private static Item MakeTreeFromQueue(List<Item> queue)
+		{
+			while (queue.Count > 1) {
+				Item firsNode = new(0);
+				Item secondNode = new(0);
+
+				// Get two nodes with the smallest frequencies
+				var minValue = queue.Min(item => item.Frequency);
+				var minItems = queue.Where(item => item.Frequency == minValue).ToList();
+				if(minItems.Count >= 2) {
+					var count = minItems.Count;
+					firsNode = minItems[minItems.Count - 1];
+					secondNode = minItems[minItems.Count - 2];
+				}
+				else
+				{
+					firsNode = minItems[0];
+					minValue = queue.Where(item => item.Frequency != firsNode.Frequency).Min(item => item.Frequency);
+					secondNode = queue.Where(item => item.Frequency == minValue).Last();
+				}
+
+				// Create the parent Node
+				var parent = new Item(0) { Frequency = firsNode.Frequency + secondNode.Frequency };
+				if(firsNode.Value < secondNode.Value) {
+					parent.Left = firsNode;
+					parent.Right = secondNode;
+				}
+				else
+				{
+					parent.Left = secondNode;
+					parent.Right = firsNode;
+				}
+
+				// Add parent node to the queue.
+				queue.Add(parent);
+				queue.Remove(firsNode); 
+				queue.Remove(secondNode);
+			}
+
+			// Show content
+			Pause("Tree", () =>
+			{
+				queue.ForEach(x =>
+				{
+					x.ConsoleWrite(0);
+				}
+			);
+			});
+
+			return queue[0];
+		}
+
+		private static List<Item> CreatePriorityQueue(byte[] bytes)
+		{
 			List<Item> queue = new();
 			bytes.ToList().ForEach(b =>
 			{
@@ -49,21 +136,12 @@
 					if (insertIndex != index)
 					{
 						queue.RemoveAt(index);
-						queue.Insert(insertIndex+1, existingNode);
+						queue.Insert(insertIndex + 1, existingNode);
 					}
 				}
 			}
 			);
-
-			// Show content
-			Pause("Priority Queue", () =>
-			{
-				queue.ForEach(x =>
-				{
-					x.ConsoleWrite(0, true);
-				}
-			);
-			});
+			return queue;
 		}
 
 		private static void Pause(string message, Action action)
