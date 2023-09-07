@@ -1,4 +1,6 @@
-﻿namespace Huffman
+﻿using System.Linq;
+
+namespace Huffman
 {
 	internal class Program
 	{
@@ -36,7 +38,18 @@
 
 			var root = MakeTreeFromQueue(queue);
 
-			var lookup = MakeLookupFromTree(root);
+			// Show content
+			Pause("Tree", () =>
+			{
+				queue.ForEach(x =>
+				{
+					x.ConsoleWrite(0);
+				}
+			);
+			});
+
+			var lookup = new Dictionary<char, string>();
+			MakeLookupFromTree(root, lookup, string.Empty);
 
 			Pause("Code lookup", () =>
 			{
@@ -45,15 +58,22 @@
 					Console.WriteLine($"{key} - {lookup[key]}");
 				}
 			});
+
+
 		}
 
-		private static IDictionary<string, string> MakeLookupFromTree(Item root)
+		private static void MakeLookupFromTree(Item node, IDictionary<char, string> dict, string code)
 		{
-			var dict = new Dictionary<string, string>();
+			if (node.Value != 0)
+			{
+				dict[node.Value] = code;
+				return;
+			}
 
-			// TGW: Populate dictionary
-
-			return dict;
+			if(node.Left != null)
+				MakeLookupFromTree(node.Left, dict, code + "0");
+			if (node.Right != null)
+				MakeLookupFromTree(node.Right, dict, code + "1");
 		}
 
 		private static Item MakeTreeFromQueue(List<Item> queue)
@@ -94,16 +114,6 @@
 				queue.Remove(firsNode); 
 				queue.Remove(secondNode);
 			}
-
-			// Show content
-			Pause("Tree", () =>
-			{
-				queue.ForEach(x =>
-				{
-					x.ConsoleWrite(0);
-				}
-			);
-			});
 
 			return queue[0];
 		}
